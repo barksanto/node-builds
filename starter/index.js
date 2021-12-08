@@ -45,7 +45,7 @@ const server = http.createServer((req, res) => {
     res.end('This is the PRODUCT URL');
   } else if(pathName === "/api") {
 
-    fs.readFile('./dev-data/data.json', 'utf-8', (err, data ) => {
+    fs.readFile(`${__dirname}/dev-data/data.json`, 'utf-8', (err, data ) => {
       const productData = JSON.parse(data);
       res.writeHead(200, {'Content-type': 'application/json'})
       res.end(data);
