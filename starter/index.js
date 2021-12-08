@@ -4,6 +4,7 @@ const url = require('url');
 
 
 
+
 //////// FILES  /////////////
 // Blocking, synchronous method
 // const textInput = fs.readFileSync('./txt/input.txt', 'utf-8');
@@ -43,13 +44,17 @@ const server = http.createServer((req, res) => {
   } else if(pathName === "/product"){
     res.end('This is the PRODUCT URL');
   } else if(pathName === "/api") {
+
     fs.readFile('./dev-data/data.json', 'utf-8', (err, data ) => {
-      console.log(JSON.parse(data)); // log the json data after parsing
-    })
+      const productData = JSON.parse(data);
+      res.writeHead(200, {'Content-type': 'application/json'})
+      res.end(data);
+      console.log(productData); // prints to terminal
+    });
 
 
 
-    res.end("API route")
+    // res.end("API route") ONLY ONE ALLOWED - THIS FUCKS IT UP
   }else {
     //errors and status code need to happen before sending out response.
     res.writeHead(404, {
