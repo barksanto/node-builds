@@ -35,26 +35,56 @@ const url = require('url');
 
 
 //////// SERVER  /////////////
+const replaceTemplate = (temp, product) => {
+  let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
+  output = output.replace(/{%PRODUCTIMAGE%}/g, product.image);
+  output = output.replace(/{%FROM%}/g, product.from);
+  output = output.replace(/{%PRODUCTNUTRIENTS%}/g, product.nutrients);
+  output = output.replace(/{%QUANTITY%}/g, product.quantity);
+  output = output.replace(/{%PRODUCTPRICE%}/g, product.price);
+  output = output.replace(/{%ID%}/g, product.id);
+  output = output.replace(/{%DESCRIPTION%}/g, product.description);
+
+  if(product.organic) output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
+  
+  return output
+}
+// this top level code is only executed nce we start the program since thats the only time it's needed
+// only read data one time - then read it from the variable for each subsequent request
+
+const tempOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8');
+const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`, 'utf-8'); 
+const tempProduct= fs.readFileSync(`${__dirname}/templates/template-product.html`, 'utf-8');
+
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const dataObject = JSON.parse(data);
+// let arr = [tempOverview,tempCard,tempProduct,dataObject ]
+// console.log(arr)
+
 //server is the result of the create method
 const server = http.createServer((req, res) => {
   const pathName = req.url
 
+  // Overview Page
   if(pathName === "/" || pathName === "/overview" ){
-    res.end('This is the OVERVIEW URL');
+    res.writeHead(200, {'Content-type': 'text/html'})
+    
+    const cardsHtml = dataObject.map(item => replaceTemplate(tempCard, item));
+    console.log(cardsHtml);
+
+    res.end(tempOverview);
+
+  // Product Page
   } else if(pathName === "/product"){
     res.end('This is the PRODUCT URL');
-  } else if(pathName === "/api") {
 
-    fs.readFile(`${__dirname}/dev-data/data.json`, 'utf-8', (err, data ) => {
-      const productData = JSON.parse(data);
+    // API Page
+  } else if(pathName === "/api") {
       res.writeHead(200, {'Content-type': 'application/json'})
       res.end(data);
-      console.log(productData); // prints to terminal
-    });
-
-
-
     // res.end("API route") ONLY ONE ALLOWED - THIS FUCKS IT UP
+    
+    // Not found page
   }else {
     //errors and status code need to happen before sending out response.
     res.writeHead(404, {
@@ -74,3 +104,4 @@ server.listen(8000, '127.0.0.1', () => {
 console.log('Listening to requests on port 8000')
 
 }) // standard ip address for localhost 
+      
