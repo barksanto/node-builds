@@ -1,6 +1,6 @@
 const fs = require('fs') // fs = file system module
 const http = require('http'); // gives us networking capabilities
-const url = require('url'); 
+const url = require('url');  // need this to parse variables from the url after selecting a product
 
 
 
@@ -49,7 +49,7 @@ const replaceTemplate = (temp, product) => {
   
   return output
 }
-// this top level code is only executed nce we start the program since thats the only time it's needed
+// this top level code is only executed once we start the program since thats the only time it's needed
 // only read data one time - then read it from the variable for each subsequent request
 
 const tempOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8');
@@ -57,27 +57,35 @@ const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`, 'u
 const tempProduct= fs.readFileSync(`${__dirname}/templates/template-product.html`, 'utf-8');
 
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
-const dataObject = JSON.parse(data);
-// let arr = [tempOverview,tempCard,tempProduct,dataObject ]
+const dataObject = JSON.parse(data); //all of the objects in data.json
+let arr = [tempOverview,tempCard,tempProduct,dataObject ]
 // console.log(arr)
 
 //server is the result of the create method
 const server = http.createServer((req, res) => {
-  const pathName = req.url
+  // console.log(req.url) // shows final request slug of route
+  // console.log(url.parse(req.url, true)) // logs all data for the request
+  const {query, pathname} = url.parse(req.url, true) // destructuring object to hold vars from the object
+
 
   // Overview Page
-  if(pathName === "/" || pathName === "/overview" ){
+  if(pathname === "/" || pathname === "/overview" ){
     res.writeHead(200, {'Content-type': 'text/html'})
     
-    const cardsHtml = dataObject.map(item => replaceTemplate(tempCard, item)).join('');
+    // dataObject is just the json file
+    const cardsHtml = dataObject.map(item => replaceTemplate(tempCard, item)).join(''); // join turns it from an array to a string
+
+    //replace the placeholderwith the HTML we just created
     const output = tempOverview.replace(/{%PRODUCTCARDS%}/, cardsHtml)
-    // console.log(cardsHtml);
+    // console.log(cardsHtml); // logs json to the server
 
     res.end(output);
 
   // Product Page
-  } else if(pathName === "/product"){
+  } else if(pathname === "/product"){
     res.end('This is the PRODUCT URL');
+    console.log(query)
+
 
     // API Page
   } else if(pathName === "/api") {
