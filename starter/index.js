@@ -83,12 +83,17 @@ const server = http.createServer((req, res) => {
 
   // Product Page
   } else if(pathname === "/product"){
-    res.end('This is the PRODUCT URL');
-    console.log(query)
+    res.writeHead(200, {'Content-type': 'text/html'})
+    const product = dataObject[query.id]
+    // console.log(query)
+    // console.log(product)
+    const output = replaceTemplate(tempProduct, product);
+    res.end(output);
+    
 
 
     // API Page
-  } else if(pathName === "/api") {
+  } else if(pathname === "/api") {
       res.writeHead(200, {'Content-type': 'application/json'})
       res.end(data);
     // res.end("API route") ONLY ONE ALLOWED - THIS FUCKS IT UP
