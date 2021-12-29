@@ -41,7 +41,7 @@ const replaceTemplate = (temp, product) => {
   output = output.replace(/{%FROM%}/g, product.from);
   output = output.replace(/{%PRODUCTNUTRIENTS%}/g, product.nutrients);
   output = output.replace(/{%QUANTITY%}/g, product.quantity);
-  output = output.replace(/{%PRODUCTPRICE%}/g, product.price);
+  output = output.replace(/{%PRICE%}/g, product.price);
   output = output.replace(/{%ID%}/g, product.id);
   output = output.replace(/{%DESCRIPTION%}/g, product.description);
 
