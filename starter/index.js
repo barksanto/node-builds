@@ -2,6 +2,10 @@ const fs = require('fs') // fs = file system module
 const http = require('http'); // gives us networking capabilities
 const url = require('url');  // need this to parse variables from the url after selecting a product
 
+const slugify = require('slugify'); // a slug is the last part of a URL that contains a unique string that website iuses as a source for unique item
+
+
+const replaceTemplate = require('./modules/replaceTemplate') // get module (replaceTemplace) and use the function
 
 
 
@@ -35,20 +39,7 @@ const url = require('url');  // need this to parse variables from the url after 
 
 
 //////// SERVER  /////////////
-const replaceTemplate = (temp, product) => {
-  let output = temp.replace(/{%PRODUCTNAME%}/g, product.productName);
-  output = output.replace(/{%PRODUCTIMAGE%}/g, product.image);
-  output = output.replace(/{%FROM%}/g, product.from);
-  output = output.replace(/{%PRODUCTNUTRIENTS%}/g, product.nutrients);
-  output = output.replace(/{%QUANTITY%}/g, product.quantity);
-  output = output.replace(/{%PRICE%}/g, product.price);
-  output = output.replace(/{%ID%}/g, product.id);
-  output = output.replace(/{%DESCRIPTION%}/g, product.description);
 
-  if(!product.organic) output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
-  
-  return output
-}
 // this top level code is only executed once we start the program since thats the only time it's needed
 // only read data one time - then read it from the variable for each subsequent request
 
@@ -59,7 +50,13 @@ const tempProduct= fs.readFileSync(`${__dirname}/templates/template-product.html
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObject = JSON.parse(data); //all of the objects in data.json
 let arr = [tempOverview,tempCard,tempProduct,dataObject ]
-// console.log(arr)
+
+const slugs = dataObject.map(el => {
+console.log(el.productName)
+})
+
+
+
 
 //server is the result of the create method
 const server = http.createServer((req, res) => {
