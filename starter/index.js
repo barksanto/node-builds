@@ -51,9 +51,8 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObject = JSON.parse(data); //all of the objects in data.json
 let arr = [tempOverview,tempCard,tempProduct,dataObject ]
 
-const slugs = dataObject.map(el => {
-console.log(el.productName)
-})
+const slugs = dataObject.map(el => slugify(el.productName, {lower: true}))
+console.log(slugs)
 
 
 
